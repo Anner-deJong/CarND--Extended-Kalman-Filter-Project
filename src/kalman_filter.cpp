@@ -39,4 +39,5 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
+  // BEWARE TO NORMALIZE phi between -pi and pi
 }

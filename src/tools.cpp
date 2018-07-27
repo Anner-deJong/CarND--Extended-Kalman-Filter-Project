@@ -22,4 +22,5 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   TODO:
     * Calculate a Jacobian here.
   */
+  //BE CAREFUL NOT TO DIVIDE BY ZERO!
 }

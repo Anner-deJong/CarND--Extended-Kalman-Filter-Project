@@ -36,7 +36,33 @@ FusionEKF::FusionEKF() {
     * Finish initializing the FusionEKF.
     * Set the process and measurement noises
   */
+  
+  // process covariance matrix
+  #include <math.h>
+  float noise_ax = 9;
+  float noise_ay = 9;  
 
+  ekf_.Q_ = MatrixXd(4, 4);
+  ekf_.Q_ << pow(dt,4)/4*noise_ax, 0, pow(dt,3)/2*noise_ax, 0,
+            0, pow(dt,4)/4*noise_ay, 0, pow(dt,3)/2*noise_ay,
+            pow(dt,3)/2*noise_ax, 0, pow(dt,2)*noise_ax, 0,
+            0, pow(dt,3)/2*noise_ay, 0, pow(dt,2)*noise_ay;
+  
+  // measurement covariance matrix is already set?
+  
+  // initial state transition matrix
+  ekf_.F_ = MatrixXd(4, 4);
+  ekf_.F_ << 1, 0, 1, 0,
+             0, 1, 0, 1,
+             0, 0, 1, 0,
+             0, 0, 0, 1;
+  
+  // state covariance matrix
+  kf_.P_ = MatrixXd(4, 4);
+  kf_.P_ << 1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1000, 0,
+            0, 0, 0, 1000;
 }
 
 /**
@@ -61,6 +87,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     cout << "EKF: " << endl;
     ekf_.x_ = VectorXd(4);
     ekf_.x_ << 1, 1, 1, 1;
+    // save the starting time
+    previous_timestamp_ = measurement_pack.timestamp_;
 
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
       /**
@@ -71,6 +99,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Initialize state.
       */
+      kf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
     }
 
     // done initializing, no need to predict or update
@@ -88,8 +117,14 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       - Time is measured in seconds.
      * Update the process noise covariance matrix.
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
-   */
-
+  */
+  //compute the time elapsed between the current and previous measurements
+  float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
+  previous_timestamp_ = measurement_pack.timestamp_;
+  
+  ekf_.F_(0,2) = dt; kf_.F_(1,3) = dt; 
+  
+  cout << "predicting! started 2nd round of measurements" << endl;
   ekf_.Predict();
 
   /*****************************************************************************

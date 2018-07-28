@@ -36,6 +36,10 @@ FusionEKF::FusionEKF() {
     * Finish initializing the FusionEKF.
     * Set the process and measurement noises
   */
+  // laser measurement matrix (=constant)
+  H_laser = MatrixXd(2, 4);
+  H_laser << 1, 0, 0, 0,
+             0, 1, 0, 0;
   
   // process covariance matrix
   #include <math.h>

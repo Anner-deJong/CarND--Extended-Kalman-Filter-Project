@@ -52,7 +52,7 @@ FusionEKF::FusionEKF() {
             pow(dt,3)/2*noise_ax, 0, pow(dt,2)*noise_ax, 0,
             0, pow(dt,3)/2*noise_ay, 0, pow(dt,2)*noise_ay;
   
-  // measurement covariance matrix is already set?
+  // measurement covariance matrix (R) is already set?
   
   // initial state transition matrix
   ekf_.F_ = MatrixXd(4, 4);
@@ -62,8 +62,8 @@ FusionEKF::FusionEKF() {
              0, 0, 0, 1;
   
   // state covariance matrix
-  kf_.P_ = MatrixXd(4, 4);
-  kf_.P_ << 1, 0, 0, 0,
+  ekf_.P_ = MatrixXd(4, 4);
+  ekf_.P_ << 1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1000, 0,
             0, 0, 0, 1000;
@@ -103,7 +103,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
       /**
       Initialize state.
       */
-      kf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
+      ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0, 0;
     }
 
     // done initializing, no need to predict or update

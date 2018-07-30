@@ -140,7 +140,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
              dt3 / 2 * noise_ax, 0, dt2 * noise_ax, 0,
              0, dt3 / 2 * noise_ay, 0, dt2 * noise_ay;
   
-  cout << "predicting! started 2nd round of measurements" << endl;
   ekf_.Predict();
 
   /*****************************************************************************

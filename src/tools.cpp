@@ -54,22 +54,23 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
   return rmse;
 }
 
-MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
+MatrixXd Tools::CalculateJacobian(const VectorXd& x_state, const MatrixXd& prev_Hj_) {
   /**
   TODO:
     * Calculate a Jacobian here.
   */
-  MatrixXd Hj(3,4);
-  //recover state parameters
+  MatrixXd Hj_(3,4);
+  //get state parameters
   float px = x_state(0);
   float py = x_state(1);
   float vx = x_state(2);
   float vy = x_state(3);
 
-  //check division by zero
+  // check division by zero. If so, return previous Hj_
+  // Make thus sure Hj_ is always valid! (initialize with zeros)
   if (px==0 && py==0) {
-    cout << "CalculateJocobian () - Error - Division by Zero" << endl;
-    return Hj;
+    cout << "Warning in CalculateJocobian () - Division by Zero" << endl;
+    return Hj_;
   }
 	
   //compute the Jacobian matrix
@@ -78,9 +79,9 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   float sq_rt1 = sqrt(sq_rt2);
   float sq_rt3 = sq_rt2*sq_rt1;
   
-  Hj << px/sq_rt1, py/sq_rt1, 0, 0,
-       -py/sq_rt2, px/sq_rt2, 0, 0,
-        py*(vx*py-vy*px)/sq_rt3, px*(vy*px-vx*py)/sq_rt3, px/sq_rt1,  py/sq_rt1;
+  Hj_ << px/sq_rt1, py/sq_rt1, 0, 0,
+        -py/sq_rt2, px/sq_rt2, 0, 0,
+         py*(vx*py-vy*px)/sq_rt3, px*(vy*px-vx*py)/sq_rt3, px/sq_rt1,  py/sq_rt1;
 
-  return Hj;
+  return Hj_;
 }

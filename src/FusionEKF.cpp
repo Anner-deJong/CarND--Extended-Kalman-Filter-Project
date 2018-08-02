@@ -21,8 +21,8 @@ FusionEKF::FusionEKF() {
   R_laser_ = MatrixXd(2, 2);
   R_radar_ = MatrixXd(3, 3);
   H_laser_ = MatrixXd(2, 4);
-  Hj_ = MatrixXd(3, 4);
-
+  Hj_ = MatrixXd::Zero(3, 4); // initialize with zeros in case a division by 0 later on forces the use of the previous Hj_
+  
   //measurement covariance matrix - laser
   R_laser_ << 0.0225, 0,
         0, 0.0225;
@@ -155,7 +155,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
     ekf_.R_ = R_radar_;
-    Hj_ = tools.CalculateJacobian(ekf_.x_);
+    Hj_ = tools.CalculateJacobian(ekf_.x_, Hj_);
     ekf_.H_ = Hj_;
     ekf_.UpdateEKF(measurement_pack.raw_measurements_);
   } else {

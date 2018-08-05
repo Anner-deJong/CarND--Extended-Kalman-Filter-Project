@@ -38,7 +38,7 @@ void KalmanFilter::Update(const VectorXd &z) {
     * update the state by using Kalman Filter equations
   */
   
-  // update specific to lasar (regular Kalman Filter)
+  // update specific to laser (regular Kalman Filter)
   VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
   

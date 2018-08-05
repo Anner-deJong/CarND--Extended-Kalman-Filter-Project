@@ -43,7 +43,7 @@ void KalmanFilter::Update(const VectorXd &z) {
   VectorXd y = z - z_pred;
   
   // update common part
-  UpdateCommon(y); 
+  _UpdateCommon(y); 
   
 }
 
@@ -60,28 +60,30 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   float v_x = x_[2];
   float v_y = x_[3];
   
+  // comment from Udacity: rho could be zero, for which case phi and rho_dot need to be robust
   float rho = sqrt(p_x*p_x + p_y*p_y);
-  float phi = atan2(p_y, p_x);
-  float rho_dot = (p_x * v_x + p_y * v_y)/ rho;
+  float phi = (rho>0) ? atan2(p_y, p_x) : 0;
+  float rho_dot = (p_x * v_x + p_y * v_y)/ std::max(rho, float(0.00001));
   
   VectorXd z_pred = VectorXd(3);
   z_pred << rho, phi, rho_dot;
   
   VectorXd y = z - z_pred;
-  // this if statement can be optimized in a single one by using abs() and sign()
+  // OLD VERSION: this if statement can be optimized in a single one by using abs() and sign()
   // (not sure if that would actually make it faster)
-  if (y[1] > M_PI) { //M_PI is pi, included via cmath
-    y[1] -= 2 * M_PI;
-  } else if (y[1] < -M_PI ) {
-    y[1] += 2 * M_PI;
-  }
+  // UPDATE: comment from Udacity: instead of unreadable if-else statement use dedicated simple function
+  _NormalizeTanAngle(y(1));
   
   // update common part
-  UpdateCommon(y);
+  _UpdateCommon(y);
   
 }
 
-void KalmanFilter::UpdateCommon(const VectorXd &y) {
+void KalmanFilter::_NormalizeTanAngle(double& phi) {
+  phi = atan2(sin(phi), cos(phi));
+  }
+
+void KalmanFilter::_UpdateCommon(const VectorXd &y) {
   
   MatrixXd Ht = H_.transpose();
   MatrixXd S_ = H_ * P_ * Ht + R_;
@@ -90,17 +92,8 @@ void KalmanFilter::UpdateCommon(const VectorXd &y) {
   
   // new estimate
   x_ = x_ + (K_ * y);
-  // comment received from Udacity: The following line can be simplified
+  // comment from Udacity: The following line can be simplified
   // P_ = (I - K * H_) * P_; // Identity matrix I no longer declared
   P_ -= K_ * H_ * P_;
   
 }
-
-
-
-
-
-
-
-
-

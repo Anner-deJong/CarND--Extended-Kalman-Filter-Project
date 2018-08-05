@@ -63,12 +63,19 @@ public:
    * @param z The measurement at k+1
    */
   void UpdateEKF(const Eigen::VectorXd &z);
+
+private:  
+  /**
+   * Simple normalizer function for angle phi
+   * @param phi The unnormalized measurement angle from the radar update setp 
+   */
+  void _NormalizeTanAngle(double& phi);
   
   /**
    * The update part that is common to both Update() and UpdateEKF()
-   * @param 
+   * @param y Vector used in the kalman calculations
    */
-  void UpdateCommon(const Eigen::VectorXd &y);
+  void _UpdateCommon(const Eigen::VectorXd &y);
 };
 
 #endif /* KALMAN_FILTER_H_ */

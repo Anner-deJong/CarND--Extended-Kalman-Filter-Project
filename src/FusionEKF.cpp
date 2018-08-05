@@ -126,13 +126,15 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   // Set the time dependencies in state transition matrix 
   ekf_.F_(0,2) = dt; ekf_.F_(1,3) = dt; 
   
-  // set process covariance matrix
-  float noise_ax = 9;
-  float noise_ay = 9;
+  // Comment received from Udacity: Good practice to make variables that will or should not change as const types
   
-  float dt2 = dt  * dt;
-  float dt3 = dt2 * dt;
-  float dt4 = dt3 * dt;
+  // set process covariance matrix
+  const float noise_ax = 9;
+  const float noise_ay = 9;
+  
+  const float dt2 = dt  * dt;
+  const float dt3 = dt2 * dt;
+  const float dt4 = dt3 * dt;
    
   ekf_.Q_ = MatrixXd(4, 4);
   ekf_.Q_ << dt4 / 4 * noise_ax, 0, dt3 / 2 * noise_ax, 0,

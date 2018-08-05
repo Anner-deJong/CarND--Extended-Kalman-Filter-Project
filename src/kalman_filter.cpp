@@ -37,22 +37,14 @@ void KalmanFilter::Update(const VectorXd &z) {
   TODO:
     * update the state by using Kalman Filter equations
   */
-  // update, specific to lasar (regular Kalman Filter)
+  
+  // update specific to lasar (regular Kalman Filter)
   VectorXd z_pred = H_ * x_;
   VectorXd y = z - z_pred;
   
-  // update, generic part (other than that H and R are already set for laser)
-  MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
-  MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * Si;
-
-  //new estimate, generic
-  x_ = x_ + (K * y);
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  // update common part
+  UpdateCommon(y); 
+  
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
@@ -60,7 +52,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
-  // update, specific to radar (extended Kalman Filter)
+  
+  // update specific to radar (extended Kalman Filter)
   // BEWARE TO NORMALIZE phi between -pi and pi
   float p_x = x_[0];
   float p_y = x_[1];
@@ -82,17 +75,32 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   } else if (y[1] < -M_PI ) {
     y[1] += 2 * M_PI;
   }
-
-  // update, generic part (other than that H and R are already set for Radar)
-  MatrixXd Ht = H_.transpose();
-  MatrixXd S = H_ * P_ * Ht + R_;
-  MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Ht;
-  MatrixXd K = PHt * Si;
-
-  //new estimate, generic
-  x_ = x_ + (K * y);
-  long x_size = x_.size();
-  MatrixXd I = MatrixXd::Identity(x_size, x_size);
-  P_ = (I - K * H_) * P_;
+  
+  // update common part
+  UpdateCommon(y);
+  
 }
+
+void KalmanFilter::UpdateCommon(const VectorXd &y) {
+  
+  MatrixXd Ht = H_.transpose();
+  MatrixXd S_ = H_ * P_ * Ht + R_;
+  MatrixXd Si = S_.inverse();
+  MatrixXd K_ = P_ * Ht * Si;
+  
+  // new estimate
+  x_ = x_ + (K_ * y);
+  // comment received from Udacity: The following line can be simplified
+  // P_ = (I - K * H_) * P_; // Identity matrix I no longer declared
+  P_ -= K_ * H_ * P_;
+  
+}
+
+
+
+
+
+
+
+
+

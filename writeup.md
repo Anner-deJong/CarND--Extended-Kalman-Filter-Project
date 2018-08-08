@@ -9,10 +9,10 @@
 
 This writeup will give an overview of the extended kalman filter implementation by going through 4 important scripts:
 
-#### [1. main.cpp](#main.cpp),
+#### [1. main.cpp](#1.-main.cpp),
 #### [2. tools.cpp](#2.-tools.cpp),
 #### [3. FusionEKF.cpp](#3.-FusionEKF.cpp), and
-#### [4. kalman_filter.cpp](#4.-kalman_filter.cpp)
+#### [4. kalman_filter.cpp](#4.-kalman_filter.cpp).
 
 ### 1. main.cpp
 
@@ -39,9 +39,9 @@ as well as updating it with new measurements:
 
     void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
 
-Upon receiving the first measurment through `ProcessMeasurement()`, the measurment argument is used to initialize the Kalman filter object state (other filter matrices get initialized upon construction of the `FusionEKF` object itself, or get created during an update call).
+Upon receiving the first measurement through `ProcessMeasurement()`, the measurement argument is used to initialize the Kalman filter object state (other filter matrices get initialized upon construction of the `FusionEKF` object itself, or get created during an update call).
 
-In any following call to `ProcessMeasurement()` the measurements gets used to update the filter object. Again, depending on whether the measurement is from a radar or from a laser sensor, different measurement data is available and different update functions get called. A laser measurement is in cartesian coordinates, and a regular Kalman filter suffices: `KalmanFilter::Update()`. A radar measurement is in polar coordinates, and requires an Extended Kalman filter: `KalmanFilter::UpdateEKF()`.
+In any following call to `ProcessMeasurement()` a measurement gets used to update the filter object. Again, depending on whether the measurement is from a radar or from a laser sensor, different measurement data is available and different update functions get called. A laser measurement is in cartesian coordinates, and a regular Kalman filter suffices: `KalmanFilter::Update()`. A radar measurement is in polar coordinates, and requires an Extended Kalman filter: `KalmanFilter::UpdateEKF()`.
 
 ### 4. kalman_filter.cpp
 
@@ -59,7 +59,7 @@ The update function for radar measurements (extended kalman filter) is:
 
     void KalmanFilter::UpdateEKF(const Eigen::VectorXd &z);
     
-Both of these functions only implement the parts of the update step that are different for the regular kalman filter as compared to the extended kalman filter. They both finish by internally calling the same function private `_UpdateCommon()` to fullfill the common part of the update step:
+Both of these functions only implement the parts of the update step which are different for the regular kalman filter as compared to the extended kalman filter. They both finish by internally calling the same function private `_UpdateCommon()` to fulfill the common part of the update step:
     
     void KalmanFilter::_UpdateCommon(const Eigen::VectorXd &y);
     
@@ -84,6 +84,4 @@ Currently, upon a restart or a dataset switch in the simulation environment, mai
 * Not reinitializing upon switching environments can actually make the kalman filter code crash
 
 I filed an issue in the original udacity repository asking if and how this would be possible.
-
-![alt text][EXMPLE]
 

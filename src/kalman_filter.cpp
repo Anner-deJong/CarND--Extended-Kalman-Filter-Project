@@ -60,7 +60,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   float v_x = x_[2];
   float v_y = x_[3];
   
-  // comment from Udacity: rho could be zero, for which case phi and rho_dot need to be robust
+  // comment from Udacity: rho could be zero. phi and rho_dot should be prepared for this
   float rho = sqrt(p_x*p_x + p_y*p_y);
   float phi = (rho>0) ? atan2(p_y, p_x) : 0;
   float rho_dot = (p_x * v_x + p_y * v_y)/ std::max(rho, float(0.00001));
@@ -91,7 +91,7 @@ void KalmanFilter::_UpdateCommon(const VectorXd &y) {
   MatrixXd K_ = P_ * Ht * Si;
   
   // new estimate
-  x_ = x_ + (K_ * y);
+  x_ += (K_ * y);
   // comment from Udacity: The following line can be simplified
   // P_ = (I - K * H_) * P_; // Identity matrix I no longer declared
   P_ -= K_ * H_ * P_;

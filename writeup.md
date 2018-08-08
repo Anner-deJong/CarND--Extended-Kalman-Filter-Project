@@ -37,22 +37,35 @@ This script implements a class (`FusionEKF`) that takes care of keeping around a
     KalmanFilter ekf_;
 as well as updating it with new measurements:
 
-    void ProcessMeasurement(const MeasurementPackage &measurement_pack)
+    void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack)
 
-Upon receiving the first measurment through `ProcessMeasurement()`, the measurment argument gets used to initialize the Kalman filter object state (other filter matrices get initialized upon construction of the `FusionEKF` object itself, or get created during an update call).
+Upon receiving the first measurment through `ProcessMeasurement()`, the measurment argument is used to initialize the Kalman filter object state (other filter matrices get initialized upon construction of the `FusionEKF` object itself, or get created during an update call).
 
 In any following call to `ProcessMeasurement()` the measurements gets used to update the filter object. Again, depending on whether the measurement is from a radar or from a laser sensor, different measurement data is available and different update functions get called. A laser measurement is in cartesian coordinates, and a regular Kalman filter suffices: `KalmanFilter::Update()`. A radar measurement is in polar coordinates, and requires an Extended Kalman filter: `KalmanFilter::UpdateEKF()`.
 
 ### 4. kalman_filter.cpp
 
+The kalman filter object has two purposes:
 
-    Update(const Eigen::VectorXd &z);
+* Keeping the filter parameters around
+* Updating the filter parameters with a newly received measurement
+
+Updating is done based on the type of measurement received by the FusionEKF object, as stated above.
+The update function for laser measurements (regular kalman filter) is:
+
+    void KalmanFilter::Update(const Eigen::VectorXd &z);
+
+The update function for radar measurements (extended kalman filter) is:
+
+    void KalmanFilter::UpdateEKF(const Eigen::VectorXd &z);
     
-    void UpdateEKF(const Eigen::VectorXd &z);
+Both of these functions only implement the parts of the update step that are different for the regular kalman filter as compared to the extended kalman filter. They both finish by internally calling the same function private `_UpdateCommon()` to fullfill the common part of the update step:
     
-    void _NormalizeTanAngle(double& phi);
+    void KalmanFilter::_UpdateCommon(const Eigen::VectorXd &y);
     
-    void _UpdateCommon(const Eigen::VectorXd &y);
+The `UpdateEKF()` function requires some extra care to prevent division by zero and non-normalized angles. For readability, angles are normalized with a separate private function, as suggested by a Udacity comment:
+
+    void KalmanFilter::_NormalizeTanAngle(double& phi);
 
 ## Conclusion
 

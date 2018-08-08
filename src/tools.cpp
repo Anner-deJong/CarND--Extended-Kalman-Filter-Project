@@ -67,10 +67,10 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state, const MatrixXd& prev_
   float vy = x_state(3);
 
   // check division by zero. If so, return previous Hj_
-  // Make thus sure Hj_ is always valid! (initialize with zeros)
+  // Make thus sure prev_Hj_ is always valid! (initialized elsewhere with zeros)
   if (px==0 && py==0) {
     cout << "Warning in CalculateJocobian () - Division by Zero" << endl;
-    return Hj_;
+    return prev_Hj_;
   }
 	
   //compute the Jacobian matrix

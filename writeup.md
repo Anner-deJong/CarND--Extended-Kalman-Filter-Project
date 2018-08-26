@@ -1,7 +1,7 @@
 # **CarND Term 2 Project 1 Writeup** 
 # **Extended Kalman Filter** 
 
-#### This repository contains a c++ implementation of an extended kalman filter. This filter is able to perform sensor fusion by combining incoming laser measurements and radar measurements. The repository is structured so that it works together with the [simulation environment provided by Udacity](https://github.com/udacity/self-driving-car-sim/releases). (The link between the environment and the code is via [uWebSocketIO](https://github.com/uNetworking/uWebSockets), and already provided by Udacity). Furthermore, this writeup does *not* include any explanation about Kalman filters, only their implementation details. A great Kalman filter theory resource can be found at [iLectureOnline](http://www.ilectureonline.com/lectures/subject/SPECIAL%20TOPICS/26/190).
+#### This repository contains a c++ implementation of an extended kalman filter. This filter is able to perform sensor fusion by combining incoming laser measurements and radar measurements. The repository is structured so that it works together with the [simulation environment provided by Udacity](https://github.com/udacity/self-driving-car-sim/releases). (The link between the environment and the code is via [uWebSocketIO](https://github.com/uNetworking/uWebSockets), and already provided by Udacity). Furthermore, this writeup does *not* include any explanation about Kalman filters, only the current implementation details. A great Kalman filter theory resource can be found at [iLectureOnline](http://www.ilectureonline.com/lectures/subject/SPECIAL%20TOPICS/26/190).
 
 ---
 
